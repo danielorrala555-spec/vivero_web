@@ -162,7 +162,9 @@ textarea {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
     gap: 22px;
-    margin-top: 25px
+    margin-top: 25px;
+    /* Evita que una tarjeta abierta estire visualmente a las demás de la misma fila. */
+    align-items: start
 }
 
 .plant-card {
@@ -209,15 +211,43 @@ textarea {
     color: #efb7a7
 }
 
-.details[hidden],
 [hidden] {
-    display: none !important
+    display: none !important;
 }
 
+/* Animación de apertura y cierre de tarjetas */
 .details {
-    border-top: 1px solid #446248;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    border-top: 1px solid transparent;
+    margin-top: 0;
+    padding-top: 0;
+
+    transition:
+        max-height 450ms ease,
+        opacity 300ms ease,
+        margin-top 450ms ease,
+        padding-top 450ms ease,
+        border-color 450ms ease;
+}
+
+/* Estado abierto */
+.details.is-open {
+    max-height: 2000px;
+    opacity: 1;
+
+    border-top-color: #446248;
     margin-top: 15px;
-    padding-top: 12px
+    padding-top: 12px;
+}
+
+/* Respetar la configuración de accesibilidad del dispositivo */
+@media (prefers-reduced-motion: reduce) {
+    .details {
+        transition: none;
+    }
 }
 
 .thumbs {

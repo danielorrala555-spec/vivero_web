@@ -131,7 +131,7 @@ function tarjeta(p) {
     const galeria = fotosAdicionales.map((src, i) =>
         `<button type="button" class="photo-thumb-button" data-ver-foto="${escapar(src)}" data-foto-titulo="${escapar(p.nombre)}" aria-label="Ampliar fotografía adicional ${i + 1} de ${escapar(p.nombre)}"><img src="${escapar(src)}" alt="Fotografía adicional ${i + 1} de ${escapar(p.nombre)}" loading="lazy"></button>`
     ).join('');
-    return `<article class="plant-card"><div class="plant-photo">${principal}</div><div class="plant-body"><h3>${escapar(p.nombre)}</h3><p class="meta">${escapar(p.categoria)} · Stock: ${Number(p.stock)}</p><span class="status ${disponible ? '' : 'out'}">${disponible ? '● Disponible' : '● No disponible'}</span><button class="btn centered" data-expandir="${p.id}" aria-expanded="false">Ver más</button><div class="details" hidden><p><strong>Precio:</strong> $${Number(p.precio).toFixed(2)}</p><p><strong>Código:</strong> ${escapar(p.codigo)}</p><p>${escapar(p.descripcion)}</p>${fotosAdicionales.length ? `<div class="thumbs" aria-label="Galería de ${escapar(p.nombre)}">${galeria}</div>` : '<p class="muted">Esta planta todavía no tiene fotografías adicionales.</p>'}${disponible ? `<button class="btn" data-consultar="${p.id}">Consultar por WhatsApp</button>` : ''}</div></div></article>`;
+    return `<article class="plant-card"><div class="plant-photo">${principal}</div><div class="plant-body"><h3>${escapar(p.nombre)}</h3><p class="meta">${escapar(p.categoria)} · Stock: ${Number(p.stock)}</p><span class="status ${disponible ? '' : 'out'}">${disponible ? '● Disponible' : '● No disponible'}</span><button class="btn centered" data-expandir="${p.id}" aria-expanded="false">Ver más</button><div class="details"><p><strong>Precio:</strong> $${Number(p.precio).toFixed(2)}</p><p><strong>Código:</strong> ${escapar(p.codigo)}</p><p>${escapar(p.descripcion)}</p>${fotosAdicionales.length ? `<div class="thumbs" aria-label="Galería de ${escapar(p.nombre)}">${galeria}</div>` : '<p class="muted">Esta planta todavía no tiene fotografías adicionales.</p>'}${disponible ? `<button class="btn" data-consultar="${p.id}">Consultar por WhatsApp</button>` : ''}</div></div></article>`;
 }
 let plantasVisibles = [];
 async function cargarPublico(reiniciar = true) { if (reiniciar) {
@@ -181,6 +181,9 @@ $('visor-fotos').addEventListener('close', () => {
 $('plantas-grid').addEventListener('click', async (e) => {
     const foto = e.target.closest('[data-ver-foto]');
     if (foto) {
+        // Si el visor ya estaba abierto, cerrarlo antes de cargar la nueva selección.
+        // Así evitamos conservar la galería anterior al abrir otra fotografía.
+        if ($('visor-fotos').open) $('visor-fotos').close();
         const tarjeta = foto.closest('.plant-card');
         const titulo = foto.dataset.fotoTitulo || 'la planta';
         const botonesFotos = tarjeta ? [...tarjeta.querySelectorAll('[data-ver-foto]')] : [foto];
@@ -193,19 +196,42 @@ $('plantas-grid').addEventListener('click', async (e) => {
         $('visor-fotos').showModal();
         return;
     }
-    const expandir = e.target.closest('[data-expandir]'); if (expandir) {
+    const expandir = e.target.closest('[data-expandir]');
+
+if (expandir) {
     const detalles = expandir.nextElementSibling;
-    detalles.hidden = !detalles.hidden;
-    expandir.textContent = detalles.hidden ? 'Ver más' : 'Ver menos';
-    expandir.setAttribute('aria-expanded', String(!detalles.hidden));
+    const abrir = !detalles.classList.contains('is-open');
+
+    // Cerrar cualquier otra tarjeta que esté abierta.
+    document.querySelectorAll('#plantas-grid .details.is-open').forEach(detalleAbierto => {
+
+        if (detalleAbierto === detalles) return;
+
+        detalleAbierto.classList.remove('is-open');
+
+        const botonAnterior = detalleAbierto.previousElementSibling;
+
+        if (botonAnterior?.matches('[data-expandir]')) {
+            botonAnterior.textContent = 'Ver más';
+            botonAnterior.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // Abrir o cerrar la tarjeta seleccionada.
+    detalles.classList.toggle('is-open', abrir);
+
+    expandir.textContent = abrir ? 'Ver menos' : 'Ver más';
+
+    expandir.setAttribute('aria-expanded', String(abrir));
+
     return;
-} const boton = e.target.closest('[data-consultar]'); if (boton) {
+}const boton = e.target.closest('[data-consultar]'); if (boton) {
     const p = plantasVisibles.find(x => String(x.id) === boton.dataset.consultar);
     if (!p)
         return;
     try {
-        const n = await obtenerContacto();
-        const url = urlWhatsapp(n, `Hola, quisiera consultar por ${p.nombre} (${p.codigo}).`);
+        const contacto = await obtenerContacto();
+        const url = urlWhatsapp(contacto?.whatsapp, `Hola, quisiera consultar por ${p.nombre} (${p.codigo}).`);
         if (url)
             window.open(url, '_blank', 'noopener,noreferrer');
         else
