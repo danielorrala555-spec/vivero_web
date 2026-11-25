@@ -1,0 +1,18 @@
+VIVERO NATURAL - COPIA INDEPENDIENTE DE AKITA ELITE
+
+1. Abrir index.html con un servidor local (por ejemplo Live Server en VS Code).
+2. Sin Supabase, la página pública muestra 3 plantas de ejemplo; el panel está desactivado. No hay conexión con Akita Elite.
+3. Crear un PROYECTO NUEVO en Supabase (no hace falta otra cuenta).
+4. En supabase.sql reemplazar ADMIN@EJEMPLO.COM por el correo administrador y ejecutar el SQL en el nuevo proyecto. Crear ese usuario en Authentication y desactivar el registro público si no lo necesita.
+5. En supabaseClient.js colocar la URL y la clave publishable/anon del NUEVO proyecto (nunca una service_role).
+6. Abrir la web y acceder con el correo y contraseña del administrador.
+7. Se pueden crear/editar/eliminar plantas, hasta 4 fotos por planta, precio, stock y descripción. Stock cero muestra No disponible.
+8. El público ve 8 plantas por carga, filtro de categoría, búsqueda y detalle expandible. El administrador tiene tabla con búsqueda, filtro y páginas de 15.
+9. Configurar WhatsApp desde el panel.
+
+IMPORTANTE:
+- Las fotos eliminadas de un registro se desvinculan del catálogo, pero sus archivos antiguos no se borran automáticamente del Storage. Conviene programar una limpieza segura posteriormente.
+- Eliminar una planta tampoco elimina automáticamente sus imágenes de Storage.
+- No se ha realizado prueba con un proyecto Supabase real; verificar autenticación, RLS, carga y eliminación antes de publicar.
+- El texto, la marca, las categorías y las imágenes de portada son provisionales y editables.
+- No se incluye pago online: las consultas se hacen por WhatsApp.

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Vivero | Catálogo de plantas</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+<body>
+    <header class="header">
+        <a class="brand" href="#inicio">VIVERO <span>NATURAL</span></a>
+        <nav>
+            <a href="#catalogo">Plantas</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#contacto">Contacto</a>
+            <div id="social-links" class="social-links" aria-label="Redes sociales" hidden></div>
+            <button id="abrir-admin" class="link-button">Administrar</button>
+        </nav>
+    </header>
+    <main>
+        <section class="hero" id="inicio">
+            <img id="imagen-portada-publica" class="hero-image" alt="" hidden>
+            <div class="hero-content">
+                <p class="eyebrow">NATURALEZA PARA TU ESPACIO</p>
+                <h1 id="titulo-portada-publico">Encuentra la planta ideal para ti</h1>
+                <p id="subtitulo-portada-publico">Explora nuestro catálogo y consulta directamente por WhatsApp.</p>
+                <a class="btn" href="#catalogo">Explorar plantas</a>
+            </div>
+        </section>
+        <section class="section" id="catalogo">
+            <p class="eyebrow">NUESTRO CATÁLOGO</p>
+            <h2>Plantas disponibles</h2>
+            <div class="filters">
+                <label>Buscar planta <input id="buscar-publico" type="search" placeholder="Nombre o código"></label>
+                <label>Categoría <select id="categoria-publica"></select></label>
+            </div>
+            <p id="estado-publico" class="muted" role="status"></p>
+            <div id="plantas-grid" class="plant-grid"></div>
+            <button id="ver-mas" class="btn centered" hidden>Ver más plantas</button>
+        </section>
+        <section class="section section-alt" id="nosotros">
+            <header class="about-heading">
+                <p class="eyebrow">NUESTRO VIVERO</p>
+                <h2>Sobre nosotros</h2>
+                <p>Conoce nuestra historia y lo que nos inspira a compartir la naturaleza.</p>
+            </header>
+            <div class="about-layout">
+                <div class="about-image-wrap">
+                    <img id="imagen-nosotros-publica" class="about-image" alt="Sobre nuestro vivero" hidden>
+                    <div id="imagen-nosotros-vacia" class="about-image-placeholder">Nuestro vivero</div>
+                </div>
+                <div class="about-copy">
+                    <h3 id="titulo-nosotros-publico">Nuestro compromiso con las plantas</h3>
+                    <div id="contenido-nosotros-publico" class="about-content">Conoce nuestra selección y encuentra opciones para tu hogar, jardín u oficina.</div>
+                </div>
+            </div>
+        </section>
+        <section class="section" id="contacto">
+            <p class="eyebrow">CONTACTO</p>
+            <h2>¿Buscas una planta?</h2>
+            <p>Escríbenos para consultar disponibilidad, precios y entrega.</p>
+            <a id="whatsapp-general" class="btn" target="_blank" rel="noopener noreferrer" hidden>Consultar por WhatsApp</a>
+            <p id="aviso-contacto" class="muted"></p>
+            <div id="social-links-footer" class="social-cards" aria-label="Redes sociales" hidden></div>
+        </section>
+    </main>
+    <footer>Vivero Natural · Catálogo informativo · Sin pagos en línea</footer>
+<dialog id="login-dialog">
+    <form id="login-form" class="dialog-form">
+        <h2>Acceso administrador</h2>
+        <p id="modo-demo" class="muted"></p>
+        <label>Correo <input id="admin-email" type="email" autocomplete="username" required></label>
+        <label>Contraseña <input id="admin-password" type="password" autocomplete="current-password" required></label>
+        <p id="login-error" role="alert"></p>
+
+<button type="button" id="recuperar-password">¿Olvidaste tu contraseña?</button>
+
+        <div class="actions">
+            <button class="btn" type="submit">Ingresar</button>
+            <button type="button" id="cerrar-login">Cancelar</button>
+        </div>
+    </form>
+</dialog>
+<dialog id="visor-fotos" class="photo-viewer">
+    <form method="dialog" class="photo-viewer-content">
+        <button class="photo-viewer-close" aria-label="Cerrar fotografía">×</button>
+        <div class="photo-viewer-stage">
+            <button type="button" id="foto-anterior" class="photo-viewer-nav" aria-label="Fotografía anterior">‹</button>
+            <img id="foto-ampliada" src="" alt="Fotografía ampliada de la planta">
+            <button type="button" id="foto-siguiente" class="photo-viewer-nav" aria-label="Fotografía siguiente">›</button>
+        </div>
+        <p id="foto-ampliada-titulo"></p>
+        <p id="foto-ampliada-contador" class="muted" aria-live="polite"></p>
+    </form>
+</dialog>
+<dialog id="reset-dialog">
+  <form id="reset-form" class="dialog-form">
+    <h2>Establecer nueva contraseña</h2>
+    <label>Nueva contraseña <input id="reset-password" type="password" minlength="8" autocomplete="new-password" required></label>
+    <p id="reset-status" role="status"></p>
+    <div class="actions">
+      <button class="btn" type="submit">Guardar contraseña</button>
+      <button type="button" id="cerrar-reset">Cancelar</button>
+    </div>
+  </form>
+</dialog>
+<section id="admin-panel" class="admin section" hidden>
+    <div class="admin-heading">
+        <div>
+            <p class="eyebrow">PANEL DE ADMINISTRACIÓN</p>
+            <h2>Gestión del vivero</h2>
+        </div>
+        <button id="cerrar-sesion">Cerrar panel</button>
+    </div>
+    <nav class="admin-nav">
+        <button data-panel="productos" class="active">Plantas</button>
+        <button data-panel="portada">Editar portada</button>
+        <button data-panel="nosotros">Editar sobre nosotros</button>
+        <button data-panel="contacto">Contacto</button>
+    </nav>
+    <div id="panel-productos">
+        <div class="admin-tools">
+            <button id="nueva-planta" class="btn">Agregar planta</button>
+            <input id="buscar-admin" type="search" placeholder="Buscar por nombre o código">
+            <select id="categoria-admin"></select>
+        </div>
+        <p id="estado-admin" role="status"></p>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Código</th>
+                        <th>Planta</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-plantas"></tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <button id="anterior-admin">Anterior</button>
+            <span id="pagina-admin"></span>
+            <button id="siguiente-admin">Siguiente</button>
+        </div>
+        <form id="planta-form" class="editor" hidden>
+          <h3 id="titulo-form">Agregar planta</h3>
+          <input id="planta-id" type="hidden">
+          <div class="form-grid">
+            <label>Código automático <input id="planta-codigo" required maxlength="40" placeholder="Se genera automáticamente" readonly aria-describedby="ayuda-codigo"></label><small id="ayuda-codigo" class="muted">El código se asigna automáticamente al crear una planta.</small>
+            <label>Nombre <input id="planta-nombre" required maxlength="120"></label>
+            <label>Categoría <select id="planta-categoria" required></select></label>
+            <label>Precio (USD) <input id="planta-precio" type="number" min="0" step="0.01" required></label>
+            <label>Unidades disponibles <input id="planta-stock" type="number" min="0" step="1" required></label>
+            <label class="wide">Descripción <textarea id="planta-descripcion" rows="4" maxlength="1500"></textarea></label>
+          </div>
+          <p class="muted">La fotografía principal es obligatoria. Puedes agregar hasta 3 fotografías adicionales.</p>
+          <label>Fotografía principal (obligatoria)
+            <input id="planta-foto-principal" type="file" accept="image/jpeg,image/png,image/webp">
+          </label>
+          <div id="foto-principal-actual" class="thumbs"></div>
+          <label>Fotografías adicionales (opcionales)
+            <input id="planta-fotos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+          </label>
+          <div id="fotos-actuales" class="thumbs"></div>
+          <div class="actions">
+            <button class="btn" type="submit">Guardar planta</button>
+            <button id="cancelar-edicion" type="button">Cancelar</button>
+          </div>
+          <p id="estado-form" role="status"></p>
+        </form>
+    </div>
+<div id="panel-portada" hidden>
+  <form id="portada-form" class="editor">
+    <h3>Editar portada</h3>
+    <div class="cover-editor-grid">
+      <div class="cover-fields">
+        <label>Título de la portada
+          <input id="titulo-portada" type="text" maxlength="120" placeholder="Título de la portada" required>
+        </label>
+        <label>Subtítulo
+          <textarea id="subtitulo-portada" rows="5" maxlength="500" placeholder="Descripción de la portada" required></textarea>
+        </label>
+      </div>
+      <div class="cover-image-editor">
+        <label>Imagen de portada
+          <input id="imagen-portada" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        </label>
+        <img id="vista-imagen-portada" class="cover-preview" alt="Vista previa de la imagen de portada" hidden>
+        <p class="muted">Una sola imagen principal. Máximo 5 MB.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="guardar-portada" class="btn" type="submit">Guardar cambios</button>
+    </div>
+    <p id="mensaje-portada" role="status"></p>
+  </form>
+</div>
+<div id="panel-nosotros" hidden>
+  <form id="nosotros-form" class="editor">
+    <h3>Editar sobre nosotros</h3>
+    <div class="about-editor-grid">
+      <div class="about-editor-fields">
+        <label>Título del contenido
+          <input id="titulo-nosotros" type="text" maxlength="120" placeholder="Ej. Nuestro compromiso con las plantas" required>
+        </label>
+        <label>Contenido
+          <textarea id="contenido-nosotros" rows="10" maxlength="5000" placeholder="Describe la trayectoria del vivero, su ubicación, servicios, valores y qué lo hace especial." required></textarea>
+        </label>
+      </div>
+      <div class="about-editor-image">
+        <label>Imagen de la sección
+          <input id="imagen-nosotros" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        </label>
+        <img id="vista-imagen-nosotros" class="about-editor-preview" alt="Vista previa de la imagen" hidden>
+        <p class="muted">Una imagen principal. Máximo 5 MB.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="guardar-nosotros" class="btn" type="submit">Guardar cambios</button>
+    </div>
+    <p id="mensaje-nosotros" role="status"></p>
+  </form>
+</div>
+<div id="panel-contacto" hidden>
+  <form id="contacto-form" class="editor">
+    <h3>WhatsApp del vivero</h3>
+    <label>Número de WhatsApp (obligatorio)
+      <div class="phone-input">
+        <span class="phone-prefix">🇪🇨 +593</span>
+        <input id="numero-whatsapp" type="tel" inputmode="numeric" maxlength="10" placeholder="0987654321" autocomplete="tel-national" aria-describedby="ayuda-whatsapp">
+      </div>
+    </label>
+    <small id="ayuda-whatsapp" class="muted">Escribe los 10 dígitos del número local, comenzando por 09. El prefijo +593 se agrega automáticamente.</small>
+    <h3 class="social-editor-title">Redes sociales <small>(opcionales)</small></h3>
+    <label class="social-field social-facebook">
+      <span class="social-field-label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.3v3h2.8v8z"/></svg>
+        Facebook
+      </span>
+      <input id="url-facebook" type="url" inputmode="url" placeholder="https://www.facebook.com/tu-pagina">
+    </label>
+    <label class="social-field social-instagram">
+      <span class="social-field-label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+        Instagram
+      </span>
+      <input id="url-instagram" type="url" inputmode="url" placeholder="https://www.instagram.com/tu-cuenta">
+    </label>
+    <label class="social-field social-tiktok">
+      <span class="social-field-label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3v11.1a4.1 4.1 0 1 1-3.5-4.05v3.2a1 1 0 1 0 .5.85V3h3c.2 2.1 1.4 3.5 3.5 3.8v3.1A7.1 7.1 0 0 1 15 8.5"/></svg>
+        TikTok
+      </span>
+      <input id="url-tiktok" type="url" inputmode="url" placeholder="https://www.tiktok.com/@tu-cuenta">
+    </label>
+    <p class="muted">Las redes que dejes vacías no aparecerán en la página pública.</p>
+    <button class="btn" type="submit">Guardar contacto</button>
+    <p id="estado-contacto" role="status"></p>
+  </form>
+</div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>
