@@ -250,7 +250,87 @@ let debounce;
 $('buscar-publico').addEventListener('input', e => { clearTimeout(debounce); debounce = setTimeout(() => { busquedaPublica = e.target.value.trim(); cargarPublico(); }, 250); });
 async function verificarAdmin() { if (MODO_DEMO)
     return false; const { data } = await supabaseClient.auth.getUser(); return Boolean(data?.user); }
-async function abrirPanel() { sesionAdmin = true; $('admin-panel').hidden = false; $('login-dialog').close(); $('admin-panel').scrollIntoView({ behavior: 'smooth' }); await Promise.all([cargarAdmin(), cargarContacto()]); }
+let posicionAntesVistaPrevia = 0;
+let cambioVistaEnCurso = false;
+
+// Espera a que termine el desplazamiento suave (con respaldo para navegadores sin scrollend).
+function desplazarSuavementeHasta(posicion) {
+    return new Promise(resolve => {
+        let terminado = false;
+        let respaldo;
+
+        const finalizar = () => {
+            if (terminado) return;
+            terminado = true;
+            clearTimeout(respaldo);
+            window.removeEventListener('scrollend', finalizar);
+            resolve();
+        };
+
+        window.addEventListener('scrollend', finalizar, { once: true });
+        respaldo = setTimeout(finalizar, 1800);
+        window.scrollTo({ top: Math.max(0, posicion), behavior: 'smooth' });
+    });
+}
+
+async function entrarVistaPrevia() {
+    if (cambioVistaEnCurso || !sesionAdmin || $('admin-panel').hidden) return;
+
+    cambioVistaEnCurso = true;
+    posicionAntesVistaPrevia = window.scrollY;
+
+    // Primero se revela la web pública y después se desplaza hasta su portada.
+    document.body.classList.add('admin-preview');
+    $('volver-admin-flotante').hidden = false;
+
+    const portada = $('inicio');
+    const destino = portada
+        ? portada.getBoundingClientRect().top + window.scrollY
+        : 0;
+
+    await desplazarSuavementeHasta(destino);
+    cambioVistaEnCurso = false;
+}
+
+async function salirVistaPrevia() {
+    if (cambioVistaEnCurso || !document.body.classList.contains('admin-preview')) return;
+
+    cambioVistaEnCurso = true;
+
+    // Se hace visible el panel mientras la página pública sigue desplegada.
+    document.body.classList.add('admin-returning');
+    $('admin-panel').hidden = false;
+
+    const panel = $('admin-panel');
+    const margen = Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--admin-panel-top-limit')
+    ) || 50;
+    const destino = panel.getBoundingClientRect().top + window.scrollY - margen;
+
+    // Primero se baja hasta el panel; la web se oculta solamente al llegar.
+    await desplazarSuavementeHasta(destino);
+
+    document.body.classList.remove('admin-preview', 'admin-returning');
+    $('volver-admin-flotante').hidden = true;
+
+    // Al retirar el contenido público, ajustar la posición al panel ya recolocado.
+    const posicionFinal = panel.getBoundingClientRect().top + window.scrollY - margen;
+    window.scrollTo(0, Math.max(0, posicionFinal));
+
+    cambioVistaEnCurso = false;
+}
+
+$('mostrar-vista-sitio').addEventListener('click', entrarVistaPrevia);
+$('volver-admin-flotante').addEventListener('click', salirVistaPrevia);
+
+// Ya no necesitamos bloquear el scroll: el contenido público se oculta en modo administrador.
+
+
+async function abrirPanel() { document.body.classList.remove('admin-preview'); $('volver-admin-flotante').hidden = true; sesionAdmin = true; $('admin-panel').hidden = false; document.body.classList.add('admin-mode'); $('login-dialog').close(); const margenSuperiorAdmin = Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--admin-panel-top-limit')
+    ) || 180;
+    const posicionPanelAdmin = $('admin-panel').getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: Math.max(0, posicionPanelAdmin - margenSuperiorAdmin), behavior: 'smooth' }); await Promise.all([cargarAdmin(), cargarContacto()]); }
 $('abrir-admin').addEventListener('click', async () => { if (await verificarAdmin())
     return abrirPanel(); $('modo-demo').textContent = MODO_DEMO ? 'Modo demostración: puedes ver el catálogo, pero necesitas configurar Supabase para administrar y guardar datos reales.' : ''; $('login-dialog').showModal(); });
 $('cerrar-login').addEventListener('click', () => $('login-dialog').close());
@@ -295,7 +375,7 @@ $('login-form').addEventListener('submit', async (e) => { e.preventDefault(); $(
 } if (!await verificarAdmin())
     return; await abrirPanel(); });
 $('cerrar-sesion').addEventListener('click', async () => { if (!MODO_DEMO)
-    await supabaseClient.auth.signOut(); sesionAdmin = false; $('admin-panel').hidden = true; $('planta-form').hidden = true; });
+    await supabaseClient.auth.signOut(); sesionAdmin = false; document.body.classList.remove('admin-mode', 'admin-preview'); $('volver-admin-flotante').hidden = true; $('admin-panel').hidden = true; $('planta-form').hidden = true; });
 document.querySelectorAll('[data-panel]').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('[data-panel]').forEach(x => x.classList.toggle('active', x === b));
     $('panel-productos').hidden = b.dataset.panel !== 'productos';

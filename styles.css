@@ -297,14 +297,14 @@ textarea {
 .actions button:not(.btn),
 .admin-tools button:not(.btn) {
     padding: 10px 15px;
-    border: 1px solid #749276;
-    background: #213c28;
+    border: 1px solid #749092;
+    background: #004d88;
     color: #fff;
     border-radius: 5px
 }
 
 .admin-nav .active {
-    background: #3a6642
+    background: #0ba3bb
 }
 
 .admin-tools {
@@ -338,12 +338,13 @@ td button {
     margin: 20px
 }
 
+/* ----------------------contenedores de de esicion----------------------- */
 .editor {
     margin: 25px 0;
     padding: 25px;
-    border: 1px solid #55705a;
+    border: 1px solid #556870;
     border-radius: 8px;
-    background: #203325;
+    background: #051d19;
     max-width: 850px
 }
 
@@ -407,7 +408,7 @@ footer {
     }
 }
 
-/* Miniatura de la planta en el inventario */
+    /* Miniatura de la planta en el inventario */
 .admin-plant-thumb {
     width: 58px;
     height: 58px;
@@ -1013,4 +1014,147 @@ footer {
         height: 42px;
         font-size: 28px
     }
+}
+
+/* =========================================================
+   MODO ADMINISTRADOR Y VISTA PREVIA DEL SITIO
+   Estilos aislados: no reemplazan los estilos existentes.
+   ========================================================= */
+
+.admin-heading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+body.admin-mode > header {
+    transform: scale(.96);
+    transform-origin: top center;
+    transition: transform 300ms ease, filter 300ms ease;
+}
+
+body.admin-mode > main,
+body.admin-mode > footer,
+body.admin-mode > header {
+    filter: brightness(.48);
+    transition: filter 350ms ease, transform 350ms ease;
+}
+
+body.admin-mode #admin-panel {
+    position: relative;
+    z-index: 1001;
+    margin: 18px auto 40px;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 18px;
+    box-shadow: 0 18px 65px rgba(0,0,0,.48), 0 0 0 1px rgba(255,255,255,.08);
+    background: var(--surface, #03221d);
+}
+
+body.admin-preview > header,
+body.admin-preview > main,
+body.admin-preview > footer {
+    filter: none;
+    transform: none;
+}
+
+body.admin-preview #admin-panel {
+    display: none !important;
+}
+
+:root {
+    /* Distancia desde el borde superior de la ventana hasta el panel admin. */
+    --admin-panel-top-limit: 50px;
+}
+
+body.admin-preview::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    pointer-events: none;
+    /* Sombreado rojo difuso e intenso, sin una franja sólida marcada. */
+    box-shadow: inset 0 0 42px 12px rgba(190, 61, 35, 0.28),
+                inset 0 0 105px 24px rgba(190, 35, 35, .28);
+}
+
+.preview-return {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 2001;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 999px;
+    padding: 12px 18px;
+    color: #fff;
+    background: #a83232;
+    box-shadow: 0 8px 28px rgba(0,0,0,.28);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 180ms ease, background 180ms ease;
+}
+
+.preview-return:hover {
+    transform: translateY(-2px);
+    background: #872727;
+}
+
+.preview-return[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 640px) {
+    .admin-heading-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+    .admin-heading-actions button {
+        flex: 1 1 auto;
+    }
+    .preview-return {
+        right: 12px;
+        bottom: 12px;
+        padding: 10px 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.admin-mode > header,
+    body.admin-mode > main,
+    body.admin-mode > footer,
+    .preview-return {
+        transition: none;
+    }
+}
+
+
+/* Modo administración: mostrar únicamente el pie identificativo y el panel. */
+body.admin-mode:not(.admin-preview) > header,
+body.admin-mode:not(.admin-preview) > main {
+    display: none !important;
+}
+
+/* El pie queda visible, sin oscurecer, como referencia de identidad del sitio. */
+body.admin-mode:not(.admin-preview) > footer {
+    filter: none !important;
+    transform: none !important;
+}
+
+/* Al entrar en vista previa se recupera la página pública completa. */
+body.admin-preview > header,
+body.admin-preview > main,
+body.admin-preview > footer {
+    display: revert !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+
+/* Durante el regreso, mostrar el panel sin ocultar todavía la página pública. */
+body.admin-preview.admin-returning #admin-panel {
+    display: block !important;
+    position: relative;
+    z-index: 1001;
 }

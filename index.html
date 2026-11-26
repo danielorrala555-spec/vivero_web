@@ -104,13 +104,21 @@
     </div>
   </form>
 </dialog>
+<button type="button" id="volver-admin-flotante" class="preview-return" hidden>
+    ← Volver al administrador
+</button>
 <section id="admin-panel" class="admin section" hidden>
     <div class="admin-heading">
         <div>
             <p class="eyebrow">PANEL DE ADMINISTRACIÓN</p>
             <h2>Gestión del vivero</h2>
         </div>
-        <button id="cerrar-sesion">Cerrar panel</button>
+        <div class="admin-heading-actions">
+            <button type="button" id="mostrar-vista-sitio" class="btn btn-preview">
+                <span aria-hidden="true">◉</span> Mostrar vista del sitio web
+            </button>
+            <button id="cerrar-sesion">Cerrar panel</button>
+        </div>
     </div>
     <nav class="admin-nav">
         <button data-panel="productos" class="active">Plantas</button>
