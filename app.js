@@ -5,6 +5,55 @@ const escapar = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '
 const PAGE_SIZE = 8, ADMIN_SIZE = 15;
 let paginaPublica = 0, paginaAdmin = 0, filtroPublico = '', busquedaPublica = '', filtroAdmin = '', busquedaAdmin = '', totalAdmin = 0, agotadoPublico = false;
 let sesionAdmin = false, fotosQuitadas = new Set(), plantaEnEdicion = null;
+const TIEMPO_INACTIVIDAD_ADMIN = 3 * 60 * 1000;
+let temporizadorInactividadAdmin = null;
+
+function detenerTemporizadorInactividadAdmin() {
+    if (temporizadorInactividadAdmin !== null) {
+        clearTimeout(temporizadorInactividadAdmin);
+        temporizadorInactividadAdmin = null;
+    }
+}
+
+function reiniciarTemporizadorInactividadAdmin() {
+    if (!sesionAdmin) return;
+    detenerTemporizadorInactividadAdmin();
+    temporizadorInactividadAdmin = setTimeout(() => {
+        cerrarSesionAdmin(true);
+    }, TIEMPO_INACTIVIDAD_ADMIN);
+}
+
+async function cerrarSesionAdmin(porInactividad = false) {
+    if (!sesionAdmin) return;
+    detenerTemporizadorInactividadAdmin();
+
+    // Desactivar primero el estado local para impedir acciones administrativas
+    // mientras se cierra la sesión remota.
+    sesionAdmin = false;
+    cambioVistaEnCurso = false;
+    document.body.classList.remove('admin-mode', 'admin-preview', 'admin-returning');
+    $('volver-admin-flotante').hidden = true;
+    $('admin-panel').hidden = true;
+    $('planta-form').hidden = true;
+    $('login-dialog').close();
+
+    if (!MODO_DEMO) {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) console.error('No se pudo cerrar la sesión administrativa:', error);
+    }
+
+    if (porInactividad) {
+        alert('El panel de administración se cerró por 3 minutos de inactividad. Para volver a administrarlo, ingresa nuevamente.');
+    }
+}
+
+// La actividad dentro del panel o de su vista previa mantiene abierta la sesión.
+['pointerdown', 'pointermove', 'keydown', 'click', 'scroll', 'input', 'change', 'touchstart', 'wheel']
+    .forEach(eventName => {
+        window.addEventListener(eventName, () => {
+            if (sesionAdmin) reiniciarTemporizadorInactividadAdmin();
+        }, { passive: true });
+    });
 const DEMO_KEY = 'vivero-demo-v1';
 const ejemplos = [
     { id: 1, codigo: 'PL-001', nombre: 'Monstera deliciosa', categoria: 'Interior', precio: 18, stock: 6, descripcion: 'Planta de hojas grandes, ideal para interiores luminosos.', fotos: [] },
@@ -79,6 +128,8 @@ function mostrarRedes(redes = {}) {
     contenedorInferior.innerHTML = tarjetasInferiores.join('');
     contenedorInferior.hidden = tarjetasInferiores.length === 0;
 }
+let contactoActual = { whatsapp: '', facebook: '', instagram: '', tiktok: '' };
+
 async function obtenerContacto() {
     if (MODO_DEMO) return { whatsapp: demo.whatsapp, facebook: '', instagram: '', tiktok: '' };
     const { data, error } = await supabaseClient
@@ -92,7 +143,13 @@ async function obtenerContacto() {
 async function cargarContacto() {
     try {
         const datos = await obtenerContacto();
-        const numero = datos.whatsapp || '';
+        contactoActual = {
+            whatsapp: datos.whatsapp || '',
+            facebook: datos.facebook || '',
+            instagram: datos.instagram || '',
+            tiktok: datos.tiktok || ''
+        };
+        const numero = contactoActual.whatsapp;
         const enlace = $('whatsapp-general');
         enlace.hidden = !numero;
         if (numero) enlace.href = urlWhatsapp(numero, 'Hola, quisiera consultar sobre sus plantas.');
@@ -326,7 +383,7 @@ $('volver-admin-flotante').addEventListener('click', salirVistaPrevia);
 // Ya no necesitamos bloquear el scroll: el contenido público se oculta en modo administrador.
 
 
-async function abrirPanel() { document.body.classList.remove('admin-preview'); $('volver-admin-flotante').hidden = true; sesionAdmin = true; $('admin-panel').hidden = false; document.body.classList.add('admin-mode'); $('login-dialog').close(); const margenSuperiorAdmin = Number.parseFloat(
+async function abrirPanel() { document.body.classList.remove('admin-preview'); $('volver-admin-flotante').hidden = true; sesionAdmin = true; reiniciarTemporizadorInactividadAdmin(); $('admin-panel').hidden = false; document.body.classList.add('admin-mode'); $('login-dialog').close(); const margenSuperiorAdmin = Number.parseFloat(
         getComputedStyle(document.documentElement).getPropertyValue('--admin-panel-top-limit')
     ) || 180;
     const posicionPanelAdmin = $('admin-panel').getBoundingClientRect().top + window.scrollY;
@@ -336,13 +393,42 @@ $('abrir-admin').addEventListener('click', async () => { if (await verificarAdmi
 $('cerrar-login').addEventListener('click', () => $('login-dialog').close());
 $('recuperar-password').addEventListener('click', async () => {
   const email = $('admin-email').value.trim();
-  if (!email) { $('login-error').textContent = 'Primero escribe tu correo.'; return; }
-  if (MODO_DEMO) { $('login-error').textContent = 'Supabase no está configurado.'; return; }
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + window.location.pathname
-  });
-  $('login-error').textContent = error ? 'Error al solicitar recuperación: ' + error.message :
-    'Si el correo está registrado, recibirás un enlace de recuperación.';
+
+  if (!email) {
+    $('login-error').textContent = 'Primero escribe tu correo.';
+    $('admin-email').focus();
+    return;
+  }
+
+  if (MODO_DEMO) {
+    $('login-error').textContent = 'Supabase no está configurado.';
+    return;
+  }
+
+  const confirmar = window.confirm(
+    `¿Deseas enviar un enlace para restablecer la contraseña a ${email}?`
+  );
+
+  if (!confirmar) return;
+
+  const boton = $('recuperar-password');
+  boton.disabled = true;
+  $('login-error').textContent = 'Enviando solicitud…';
+
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+
+    $('login-error').textContent = error
+      ? 'Error al solicitar recuperación: ' + error.message
+      : 'Si el correo está registrado, recibirás un enlace para cambiar la contraseña.';
+  } catch (error) {
+    $('login-error').textContent = 'No se pudo enviar la solicitud. Inténtalo nuevamente.';
+    console.error('Error al solicitar recuperación de contraseña:', error);
+  } finally {
+    boton.disabled = false;
+  }
 });
 $('cerrar-reset').addEventListener('click', () => $('reset-dialog').close());
 $('reset-form').addEventListener('submit', async e => {
@@ -374,8 +460,7 @@ $('login-form').addEventListener('submit', async (e) => { e.preventDefault(); $(
     return;
 } if (!await verificarAdmin())
     return; await abrirPanel(); });
-$('cerrar-sesion').addEventListener('click', async () => { if (!MODO_DEMO)
-    await supabaseClient.auth.signOut(); sesionAdmin = false; document.body.classList.remove('admin-mode', 'admin-preview'); $('volver-admin-flotante').hidden = true; $('admin-panel').hidden = true; $('planta-form').hidden = true; });
+$('cerrar-sesion').addEventListener('click', () => cerrarSesionAdmin(false));
 document.querySelectorAll('[data-panel]').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('[data-panel]').forEach(x => x.classList.toggle('active', x === b));
     $('panel-productos').hidden = b.dataset.panel !== 'productos';
@@ -683,6 +768,24 @@ async function cargarPortadaAdmin() {
     }
 }
 
+function cancelarEdicionPortada() {
+    nuevaImagenPortada = null;
+    $('imagen-portada').value = '';
+    $('titulo-portada').value = portadaActual.titulo || '';
+    $('subtitulo-portada').value = portadaActual.subtitulo || '';
+
+    const imagen = $('vista-imagen-portada');
+    if (portadaActual.imagen_url) {
+        imagen.src = portadaActual.imagen_url;
+        imagen.hidden = false;
+    } else {
+        imagen.removeAttribute('src');
+        imagen.hidden = true;
+    }
+    $('mensaje-portada').textContent = 'Cambios descartados.';
+}
+$('cancelar-portada').addEventListener('click', cancelarEdicionPortada);
+
 $('imagen-portada').addEventListener('change', () => {
     const file = $('imagen-portada').files?.[0];
     nuevaImagenPortada = file || null;
@@ -811,6 +914,24 @@ async function cargarNosotrosAdmin() {
     }
 }
 
+function cancelarEdicionNosotros() {
+    nuevaImagenNosotros = null;
+    $('imagen-nosotros').value = '';
+    $('titulo-nosotros').value = nosotrosActual.titulo || '';
+    $('contenido-nosotros').value = nosotrosActual.contenido || '';
+
+    const imagen = $('vista-imagen-nosotros');
+    if (nosotrosActual.imagen_url) {
+        imagen.src = nosotrosActual.imagen_url;
+        imagen.hidden = false;
+    } else {
+        imagen.removeAttribute('src');
+        imagen.hidden = true;
+    }
+    $('mensaje-nosotros').textContent = 'Cambios descartados.';
+}
+$('cancelar-nosotros').addEventListener('click', cancelarEdicionNosotros);
+
 $('imagen-nosotros').addEventListener('change', () => {
     const file = $('imagen-nosotros').files?.[0];
     nuevaImagenNosotros = file || null;
@@ -869,6 +990,15 @@ $('numero-whatsapp').addEventListener('input', () => {
     else if (digitos.startsWith('9') && digitos.length === 9) digitos = '0' + digitos;
     campo.value = digitos.slice(0, 10);
 });
+
+function cancelarEdicionContacto() {
+    $('numero-whatsapp').value = numeroLocalEcuador(contactoActual.whatsapp);
+    $('url-facebook').value = contactoActual.facebook || '';
+    $('url-instagram').value = contactoActual.instagram || '';
+    $('url-tiktok').value = contactoActual.tiktok || '';
+    $('estado-contacto').textContent = 'Cambios descartados.';
+}
+$('cancelar-contacto').addEventListener('click', cancelarEdicionContacto);
 
 $('contacto-form').addEventListener('submit', async (e) => {
     e.preventDefault();

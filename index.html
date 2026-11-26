@@ -5,6 +5,31 @@
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Vivero | Catálogo de plantas</title>
         <link rel="stylesheet" href="styles.css">
+
+        <style>
+            .password-recovery-button {
+                display: inline-block;
+                margin: 0.35rem 0 0.75rem;
+                padding: 0.35rem 0;
+                border: 0;
+                background: transparent;
+                color: #a6d99b;
+                font: inherit;
+                font-size: 0.92rem;
+                text-decoration: underline;
+                text-underline-offset: 3px;
+                cursor: pointer;
+                transition: color 160ms ease, opacity 160ms ease;
+            }
+            .password-recovery-button:hover {
+                color: #d2edc9;
+            }
+            .password-recovery-button:focus-visible {
+                outline: 2px solid #a6d99b;
+                outline-offset: 3px;
+                border-radius: 4px;
+            }
+        </style>
     </head>
 <body>
     <header class="header">
@@ -73,7 +98,7 @@
         <label>Contraseña <input id="admin-password" type="password" autocomplete="current-password" required></label>
         <p id="login-error" role="alert"></p>
 
-<button type="button" id="recuperar-password">¿Olvidaste tu contraseña?</button>
+<button type="button" id="recuperar-password" class="password-recovery-button">¿Olvidaste tu contraseña?</button>
 
         <div class="actions">
             <button class="btn" type="submit">Ingresar</button>
@@ -204,6 +229,7 @@
     </div>
     <div class="actions">
       <button id="guardar-portada" class="btn" type="submit">Guardar cambios</button>
+      <button id="cancelar-portada" type="button">Cancelar</button>
     </div>
     <p id="mensaje-portada" role="status"></p>
   </form>
@@ -230,6 +256,7 @@
     </div>
     <div class="actions">
       <button id="guardar-nosotros" class="btn" type="submit">Guardar cambios</button>
+      <button id="cancelar-nosotros" type="button">Cancelar</button>
     </div>
     <p id="mensaje-nosotros" role="status"></p>
   </form>
@@ -267,7 +294,10 @@
       <input id="url-tiktok" type="url" inputmode="url" placeholder="https://www.tiktok.com/@tu-cuenta">
     </label>
     <p class="muted">Las redes que dejes vacías no aparecerán en la página pública.</p>
-    <button class="btn" type="submit">Guardar contacto</button>
+    <div class="actions">
+      <button class="btn" type="submit">Guardar contacto</button>
+      <button id="cancelar-contacto" type="button">Cancelar</button>
+    </div>
     <p id="estado-contacto" role="status"></p>
   </form>
 </div>

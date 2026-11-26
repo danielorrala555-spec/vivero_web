@@ -297,14 +297,14 @@ textarea {
 .actions button:not(.btn),
 .admin-tools button:not(.btn) {
     padding: 10px 15px;
-    border: 1px solid #749092;
-    background: #004d88;
+    border: 1px solid #749276;
+    background: #213c28;
     color: #fff;
     border-radius: 5px
 }
 
 .admin-nav .active {
-    background: #0ba3bb
+    background: #3a6642
 }
 
 .admin-tools {
@@ -338,13 +338,12 @@ td button {
     margin: 20px
 }
 
-/* ----------------------contenedores de de esicion----------------------- */
 .editor {
     margin: 25px 0;
     padding: 25px;
-    border: 1px solid #556870;
+    border: 1px solid #55705a;
     border-radius: 8px;
-    background: #051d19;
+    background: #203325;
     max-width: 850px
 }
 
@@ -408,7 +407,7 @@ footer {
     }
 }
 
-    /* Miniatura de la planta en el inventario */
+/* Miniatura de la planta en el inventario */
 .admin-plant-thumb {
     width: 58px;
     height: 58px;
@@ -1041,7 +1040,7 @@ body.admin-mode > header {
     filter: brightness(.48);
     transition: filter 350ms ease, transform 350ms ease;
 }
-
+/* -----------------------------------------body admin general--------------------------------- */
 body.admin-mode #admin-panel {
     position: relative;
     z-index: 1001;
@@ -1049,7 +1048,7 @@ body.admin-mode #admin-panel {
     border: 1px solid rgba(255,255,255,.18);
     border-radius: 18px;
     box-shadow: 0 18px 65px rgba(0,0,0,.48), 0 0 0 1px rgba(255,255,255,.08);
-    background: var(--surface, #03221d);
+    background: var(--surface, #072816);
 }
 
 body.admin-preview > header,
@@ -1157,4 +1156,172 @@ body.admin-preview.admin-returning #admin-panel {
     display: block !important;
     position: relative;
     z-index: 1001;
+}
+
+
+/* VIVERO NATURAL — estilo botánico compartido por los cuatro formularios */
+.admin .editor {
+    max-width: 100%;
+    margin: 24px 0 30px;
+    padding: clamp(20px, 3vw, 34px);
+    color: #1b2b1c;
+    background: linear-gradient(145deg, #5eb46d 0%, #56925f 100%);
+    border: 1px solid #d8d0b9;
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.admin .editor > h3 {
+    margin: 0 0 22px;
+    padding-bottom: 14px;
+    color: #24472b;
+    border-bottom: 1px solid #d8ddc9;
+    font-size: clamp(21px,2.4vw,27px);
+}
+.admin .editor label { color:#263b28; font-weight:650; gap:9px; }
+.admin .editor input:not([type="file"]),
+.admin .editor select,
+.admin .editor textarea {
+    box-sizing:border-box; width:100%; min-height:46px; padding:12px 14px;
+    color:#243326; background:#fffef9; border:1px solid #b8c3a6;
+    border-radius:10px; box-shadow:0 2px 5px rgba(36,58,36,.06);
+    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.admin .editor textarea { min-height:120px; line-height:1.55; resize:vertical; }
+.admin .editor input:not([type="file"]):focus,
+.admin .editor select:focus,
+.admin .editor textarea:focus {
+    outline:none; background:#fff; border-color:#66864d;
+    box-shadow:0 0 0 3px rgba(112,151,79,.18);
+}
+.admin .editor input[readonly] { color:#667264; background:#e9e8dc; border-color:#d0cebf; }
+.admin .editor input[type="file"] {
+    box-sizing:border-box; display:block; width:100%; min-height:58px; padding:9px;
+    color:#52624e; background:#f8f7ed; border:1px dashed #91a47a;
+    border-radius:12px; cursor:pointer;
+}
+.admin .editor input[type="file"]::file-selector-button {
+    margin-right:13px; padding:10px 16px; color:#fffdf5; font-weight:700;
+    background:#496b35; border:0; border-radius:8px; cursor:pointer;
+    transition:background .18s ease, transform .18s ease;
+}
+.admin .editor input[type="file"]::file-selector-button:hover { background:#36572a; transform:translateY(-1px); }
+.admin .editor .muted, .admin .editor small.muted { color:#687565; }
+.admin .editor .actions { align-items:center; gap:12px; margin-top:24px; }
+.admin .editor button.btn,
+.admin .editor .actions button.btn {
+    min-height:46px; padding:12px 21px; color:#fffdf5; font-weight:750;
+    background:linear-gradient(135deg,#52783b,#365b2d); border:1px solid #31552a;
+    border-radius:10px; box-shadow:0 5px 12px rgba(45,77,36,.18);
+    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.admin .editor button.btn:hover,
+.admin .editor .actions button.btn:hover {
+    filter:brightness(1.08); transform:translateY(-1px);
+    box-shadow:0 8px 16px rgba(45,77,36,.22);
+}
+.admin .editor .actions button:not(.btn) {
+    min-height:44px; padding:11px 19px; color:#40513d;
+    background:#f4f0e3; border:1px solid #b9b49f; border-radius:10px; font-weight:650;
+}
+.admin .editor .actions button:not(.btn):hover { background:#e9e5d6; }
+.admin .editor .thumbs { align-items:flex-start; gap:14px; margin:14px 0 20px; }
+.admin .editor .thumb-item {
+    padding:7px; background:#f5f2e7; border:1px solid #ded8c5;
+    border-radius:13px; box-shadow:0 4px 12px rgba(34,51,31,.09);
+}
+.admin .editor .thumb-item img,
+.admin .editor .thumbs > img {
+    width:112px; height:112px; object-fit:cover; border-radius:9px;
+}
+.admin .editor .thumb-item button {
+    display:grid; place-items:center; width:30px; height:30px;
+    margin:7px auto 0; padding:0; color:#fff; font-size:17px; font-weight:800;
+    line-height:1; background:#b94c36; border:2px solid #fff8ed;
+    border-radius:50%; cursor:pointer;
+}
+.admin .editor .thumb-item button:hover { background:#963a2a; }
+.admin .editor .cover-preview,
+.admin .editor .about-editor-preview {
+    border:1px solid #c5cdb4; border-radius:13px;
+    box-shadow:0 6px 16px rgba(31,48,28,.12);
+}
+.admin .editor .phone-prefix { color:#35512f; background:#e7eadb; border-color:#b8c3a6; }
+.admin .editor .social-editor-title {
+    padding-top:16px; color:#24472b; border-top:1px solid #d8ddc9;
+}
+.admin .editor .social-editor-title small { color:#687565; }
+@media(max-width:650px) {
+    .admin .editor { padding:18px; border-radius:14px; }
+    .admin .editor .thumb-item img, .admin .editor .thumbs > img { width:92px; height:92px; }
+    .admin .editor .actions { align-items:stretch; }
+}
+
+
+/* ==========================================================
+   Botones de acciones del panel — estilo sencillo y uniforme
+   Editar: amarillo cálido | Eliminar: rojo | Cerrar: crema
+   ========================================================== */
+
+/* Botón Cerrar panel */
+.admin #cerrar-sesion {
+    padding: 10px 17px;
+    color: #263326;
+    font-weight: 700;
+    background: #f3efdf;
+    border: 1px solid #d7cfb8;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.admin #cerrar-sesion:hover {
+    background: #b8b09a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 9px rgba(0, 0, 0, .18);
+}
+
+/* Botones Editar y Eliminar dentro de la tabla */
+.admin .table-scroll td button {
+    min-width: 76px;
+    margin: 3px 2px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    line-height: 1.2;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+/* Editar — amarillo suave tirando a naranja */
+.admin .table-scroll td button:first-of-type {
+    color: #302414;
+    background: #dec496;
+    border: 1px solid #dba94d;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+}
+
+.admin .table-scroll td button:first-of-type:hover {
+    background: #e2b259;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .16);
+}
+
+/* Eliminar — rojo */
+.admin .table-scroll td button:last-of-type {
+    color: #fffaf7;
+    background: #c94b40;
+    border: 1px solid #a93b32;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+}
+
+.admin .table-scroll td button:last-of-type:hover {
+    background: #df5a4e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .16);
+}
+
+/* Foco visible para navegación con teclado */
+.admin #cerrar-sesion:focus-visible,
+.admin .table-scroll td button:focus-visible {
+    outline: 3px solid #a6d99b;
+    outline-offset: 2px;
 }
