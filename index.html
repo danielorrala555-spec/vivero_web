@@ -37,7 +37,6 @@
         <nav>
             <a href="#catalogo">Plantas</a>
             <a href="#nosotros">Nosotros</a>
-            <a href="#conoce-vivero">Nuestro vivero</a>
             <a href="#contacto">Contacto</a>
             <div id="social-links" class="social-links" aria-label="Redes sociales" hidden></div>
             <button id="abrir-admin" class="link-button">Administrar</button>
@@ -51,33 +50,6 @@
                 <h1 id="titulo-portada-publico">Encuentra la planta ideal para ti</h1>
                 <p id="subtitulo-portada-publico">Explora nuestro catálogo y consulta directamente por WhatsApp.</p>
                 <a class="btn" href="#catalogo">Explorar plantas</a>
-            </div>
-        </section>
-        <section class="section vivero-historia" id="conoce-vivero">
-            <div class="vivero-historia-inner">
-                <header class="vivero-historia-heading">
-                    <p class="eyebrow">UN RECORRIDO POR NUESTRO ESPACIO</p>
-                    <h2 id="titulo-vivero-publico">Conoce nuestro vivero</h2>
-                    <p id="descripcion-vivero-publica">Un espacio lleno de vida, naturaleza y plantas para cada rincón.</p>
-                </header>
-                <div class="vivero-carousel" aria-label="Fotografías de nuestro vivero">
-                    <button type="button" id="vivero-foto-anterior" class="vivero-carousel-arrow" aria-label="Fotografía anterior">‹</button>
-                    <div class="vivero-carousel-stage" id="vivero-carousel-stage">
-                        <button type="button" class="vivero-carousel-card is-side is-left" id="vivero-foto-izquierda" aria-label="Ver fotografía anterior" hidden>
-                            <img alt="">
-                        </button>
-                        <button type="button" class="vivero-carousel-card is-center" id="vivero-foto-centro" aria-label="Fotografía actual" hidden>
-                            <img id="vivero-foto-publica" alt="Fotografía de nuestro vivero">
-                        </button>
-                        <button type="button" class="vivero-carousel-card is-side is-right" id="vivero-foto-derecha" aria-label="Ver fotografía siguiente" hidden>
-                            <img alt="">
-                        </button>
-                        <div id="vivero-foto-vacia" class="vivero-carousel-placeholder">Próximamente fotografías de nuestro vivero</div>
-                        <p id="vivero-foto-contador" class="vivero-carousel-counter" aria-live="polite"></p>
-                    </div>
-                    <button type="button" id="vivero-foto-siguiente" class="vivero-carousel-arrow" aria-label="Fotografía siguiente">›</button>
-                </div>
-                <div id="vivero-puntos" class="vivero-carousel-dots" aria-label="Seleccionar fotografía"></div>
             </div>
         </section>
         <section class="section" id="catalogo">
@@ -108,7 +80,6 @@
                 </div>
             </div>
         </section>
-
         <section class="section" id="contacto">
             <p class="eyebrow">CONTACTO</p>
             <h2>¿Buscas una planta?</h2>
@@ -178,7 +149,6 @@
         <button data-panel="productos" class="active">Plantas</button>
         <button data-panel="portada">Editar portada</button>
         <button data-panel="nosotros">Editar sobre nosotros</button>
-        <button data-panel="vivero">Conoce nuestro vivero</button>
         <button data-panel="contacto">Contacto</button>
     </nav>
     <div id="panel-productos">
@@ -289,28 +259,6 @@
       <button id="cancelar-nosotros" type="button">Cancelar</button>
     </div>
     <p id="mensaje-nosotros" role="status"></p>
-  </form>
-</div>
-<div id="panel-vivero" hidden>
-  <form id="vivero-form" class="editor">
-    <h3>Editar «Conoce nuestro vivero»</h3>
-    <p class="muted">Esta sección tendrá fondo blanco en la página pública. Puedes cambiar el título, la descripción y administrar hasta cinco fotografías.</p>
-    <label>Título
-      <input id="titulo-vivero" type="text" maxlength="120" required>
-    </label>
-    <label>Descripción
-      <textarea id="descripcion-vivero" rows="4" maxlength="800" required></textarea>
-    </label>
-    <label>Agregar fotografías (máximo 5 en total)
-      <input id="fotos-vivero" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-    </label>
-    <p class="muted">Formatos JPG, PNG o WebP. Máximo 5 MB por fotografía. Usa las flechas para cambiar el orden del carrusel.</p>
-    <div id="vivero-fotos-editor" class="vivero-admin-gallery"></div>
-    <div class="actions">
-      <button class="btn" id="guardar-vivero" type="submit">Guardar sección</button>
-      <button id="cancelar-vivero" type="button">Descartar cambios</button>
-    </div>
-    <p id="mensaje-vivero" role="status"></p>
   </form>
 </div>
 <div id="panel-contacto" hidden>
